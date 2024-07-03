@@ -1,55 +1,65 @@
 import './Login.css';
+import 'react-toastify/dist/ReactToastify.css';
 
-import React from 'react';
-import { useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
 import { FaLock, FaUser } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+
+import LoginFormSchema from './LoginFormSchema';
 
 const Login = () => {
-  const [userEmail, setUserEmail] = useState('');
-  const [userPass, setUserPass] = useState('');
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(LoginFormSchema),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('agora sim vc entendeu a essência', userEmail, userPass);
+  const onSubmit = (data) => {
+    console.log('Dados válidos: ', data);
+    toast.success('Login bem-sucedido!');
+  };
+
+  const onError = (error: any) => {
+    // Exibe um toast de erro para cada campo com erro
+    Object.values(error).forEach((fieldError: any) => {
+      toast.error(fieldError.message);
+    });
   };
 
   return (
     <div className="container">
-      <form onSubmit={handleSubmit}>
+      <ToastContainer />
+      <form onSubmit={handleSubmit(onSubmit, onError)}>
         <h1>Acesse o sistema</h1>
         <div className="input-field">
           <input
             type="email"
-            name="email"
+            {...register('email')}
             placeholder="Digite seu E-mail"
-            onChange={(e) => {
-              setUserEmail(e.target.value);
-            }}
-            value={userEmail}
+            autoComplete="off"
           />
           <FaUser className="icon" />
         </div>
         <div className="input-field">
           <input
             type="password"
-            name="senha"
+            {...register('password')}
             placeholder="Digite sua senha"
-            onChange={(e) => {
-              setUserPass(e.target.value);
-            }}
-            value={userPass}
+            autoComplete="off"
           />
           <FaLock className="icon" />
         </div>
-
         <div className="recall-forget">
           <label>
-            <input type="checkbox" name="" id="" />
+            <input type="checkbox" {...register('renember')} />
             Lembre de mim
           </label>
           <a href="#">Esqueceu a senha?</a>
         </div>
-        <button>Entrar</button>
+        <button type="submit">Entrar</button>
         <div className="signup-link">
           <p>
             Não tenho uma conta?<a href="#">Registrar</a>

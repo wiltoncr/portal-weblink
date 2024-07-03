@@ -20,7 +20,7 @@
   margin: 30px auto;
 }
 
-.input-field input {
+.input-field input{
     width: 100%;
     height: 100%;
     outline: none;
@@ -56,7 +56,7 @@
     color: white;
 }
 
-.container button {
+.container form button {
     width: 100%;
     height: 50px;
     background-color: white;
