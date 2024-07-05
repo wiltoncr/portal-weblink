@@ -1,6 +1,6 @@
 import './App.css';
 
-import Login from './Components/Login/Login';
+import Login from './pages/Login';
 
 function App() {
   return (
