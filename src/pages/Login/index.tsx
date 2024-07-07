@@ -1,49 +1,43 @@
 import './Login.css';
-import 'react-toastify/dist/ReactToastify.css';
 
-import { useState } from 'react';
+import { AxiosError } from 'axios';
 import { Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 
 import LoginForm from '../../Components/LoginForm';
-import authService from '../../services/auth';
-
-interface LoginData {
-  email: string;
-  password: string;
-  remember: boolean;
-}
+import { useAuth } from '../../contexts/AuthContext'; // Importe o contexto de autenticação
 
 const Login = () => {
-  const [redirectTO, setRedirecTO] = useState('');
+  const { isAuthenticated, login } = useAuth();
+  interface LoginData {
+    email: string;
+    password: string;
+    remember: boolean;
+  }
 
   const handleSubmit = async (data: LoginData) => {
     try {
-      const res = await authService.authenticate(data);
-      authService.setLoggedUser(res.data);
-      setRedirecTO('/');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        // Tratar como um erro comum
-        console.log(error.response.data);
-
-        toast.error(error.message);
-      } else if (typeof error === 'string') {
-        // Se for uma string, tratar como uma mensagem de erro
-        toast.error(error);
-      } else if (error instanceof Array) {
-        // Se for um array, pode ser um conjunto de erros
-        error.forEach((erro: string) => toast.error(erro));
+      await login(data);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { response } = error;
+        if (response && response.data.errors && Array.isArray(response.data.errors)) {
+          response.data.errors.forEach((error: string) => {
+            toast.error(error);
+          });
+        } else {
+          toast.error('Erro interno no servidor');
+        }
       } else {
-        // Caso contrário, exibir uma mensagem genérica de erro
         toast.error('Erro desconhecido');
       }
     }
   };
 
-  if (redirectTO !== '') {
-    return <Navigate to={redirectTO} />;
+  if (isAuthenticated) {
+    return <Navigate to="/" />;
   }
+
   return (
     <div className="container">
       <ToastContainer />

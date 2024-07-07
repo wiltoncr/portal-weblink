@@ -17,6 +17,20 @@ const authService = {
     return axios.post(endpoint, data);
   },
 
+  // Definindo a função de verificação de token
+  async verifyToken(token: string) {
+    const endpoint = `${apiUrl}/login/verifyToken`;
+    return axios.post(endpoint, token, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  },
+
+  logout() {
+    localStorage.removeItem('user');
+  },
+
   // Função para salar o usuário logado no local storage
   setLoggedUser(data: LoginData) {
     const parsedData = JSON.stringify(data);
