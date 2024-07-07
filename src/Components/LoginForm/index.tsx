@@ -1,12 +1,18 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { FaLock, FaUser } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 import LoginFormSchema from './LoginFormSchema';
 
+interface LoginData {
+  email: string;
+  password: string;
+  remember: boolean;
+}
 interface LoginFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: LoginData) => void;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
@@ -55,7 +61,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
       <button type="submit">Entrar</button>
       <div className="signup-link">
         <p>
-          Não tenho uma conta?<a href="#">Registrar</a>
+          Não tenho uma conta?
+          <a href="#">Registro</a>
         </p>
       </div>
     </form>
