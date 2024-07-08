@@ -39,9 +39,11 @@ const Login = () => {
   }
 
   return (
-    <div className="container">
-      <ToastContainer />
-      <LoginForm onSubmit={handleSubmit} />
+    <div className="main">
+      <div className="container">
+        <ToastContainer />
+        <LoginForm onSubmit={handleSubmit} />
+      </div>
     </div>
   );
 };

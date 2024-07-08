@@ -6,9 +6,6 @@
 }
 
 .app {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     background: #020233;
     color: white;

@@ -1,8 +1,15 @@
+import { ToastContainer } from 'react-toastify';
+
+import Header from '../../Components/Header';
+
 const Home = () => {
   return (
-    <div className="container">
-      <h1>Ok!</h1>
-    </div>
+    <>
+      <Header />
+      <div className="container">
+        <ToastContainer />
+      </div>
+    </>
   );
 };
 
