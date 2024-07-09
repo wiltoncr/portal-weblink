@@ -310,3 +310,39 @@ a {
     font-size: 12px;
     line-height: 20px;
 }
+
+.d-none {
+    display: none !important;
+}
+
+@media (min-width: 768px) {
+    .d-md-flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .flex-md-items-center {
+        align-items: center !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .flex-md-justify-end {
+        justify-content: flex-end !important;
+    }
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.ml-2 {
+    margin-left: 0.8rem;
+}
+
+@media (min-width: 768px) {
+    .d-md-none {
+        display: none !important;
+    }
+}
