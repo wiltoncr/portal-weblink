@@ -1,9 +1,44 @@
 import './Header.css';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+import userService from '../../services/userData';
 
 const Header = () => {
-  const [isOverlayVisible, setIsOverlayVisible] = useState(true);
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+
+  interface UserData {
+    id: number;
+    name: string;
+    email: string;
+  }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+        const { token } = user;
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+
+        const response: UserData | null = await userService.getUserData(token);
+
+        userService.setUserData(response);
+
+        const storedUserData = userService.getUserDataFromLocalStorage();
+        if (storedUserData) {
+          setUserData(storedUserData);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+        // Trate o erro conforme necessário (ex.: redirecionar para página de login)
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const toggleOverlay = () => {
     setIsOverlayVisible(!isOverlayVisible);
@@ -155,7 +190,7 @@ const Header = () => {
             <div className="AppHeader-context-compact">
               <a className="AppHeader-context-compact-trigger no-underline" href="/wiltoncr">
                 <strong className="AppHeader-context-compact-mainItem d-flex flex-items-center Truncate">
-                  <span className="Truncate-text ">wiltoncr</span>
+                  <span className="Truncate-text ">{userData?.name}</span>
                 </strong>
               </a>
             </div>
