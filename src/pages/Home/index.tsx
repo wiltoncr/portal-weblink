@@ -1,13 +1,15 @@
 import './Home.css';
 
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import Header from '../../Components/Header';
 import accesService from '../../services/access';
 
 const Home = () => {
-  const [accessData, setAccessData] = useState<AccessData | null>(null);
+  const [accessData, setAccessData] = useState<AccessData>({ access: [] });
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchTerm, setSearchTerm] = useState('');
   interface AccessData {
     access: AccessItem[];
   }
@@ -50,6 +52,47 @@ const Home = () => {
     fetchAccessData();
   }, []);
 
+  const sortAccessByType = () => {
+    if (accessData.access.length >= 2) {
+      const sortedAccess = {
+        access: [...accessData.access],
+      };
+      if (sortOrder === 'asc') {
+        sortedAccess.access.sort((a, b) => a.type - b.type); // Ordena de forma crescente pelo campo type
+        setSortOrder('desc');
+      } else {
+        sortedAccess.access.sort((a, b) => b.type - a.type); // Ordena de forma decrescente pelo campo type
+        setSortOrder('asc');
+      }
+
+      setAccessData(sortedAccess);
+    } else {
+      // Caso não haja elementos suficientes para ordenar, apenas atualize o estado sem modificar o array
+      setAccessData((prevState) => ({
+        ...prevState,
+        access: [...(prevState.access ?? [])],
+      }));
+    }
+  };
+
+  const handleSearchChange = (event: { target: { value: SetStateAction<string> } }) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredAccess = accessData.access.filter((item) => {
+    const access = item.access.toLowerCase();
+    const clientName = item.client.name.toLowerCase();
+    const desc = item.desc.toLowerCase();
+    const searchTermLower = searchTerm.toLowerCase();
+
+    // Verifica se algum dos campos contém o termo de pesquisa
+    return (
+      access.includes(searchTermLower) ||
+      clientName.includes(searchTermLower) ||
+      desc.includes(searchTermLower)
+    );
+  });
+
   return (
     <>
       <Header />
@@ -86,11 +129,13 @@ const Home = () => {
                           className="form-control width-full"
                           placeholder="Find a somethings…"
                           autoComplete="off"
+                          value={searchTerm}
+                          onChange={handleSearchChange}
                         />
                       </div>
                       <div className="d-flex flex-wrap gap-2">
                         <div className="details-reset details-overlay position-relative mt-1 mt-lg-0">
-                          <div className="btn">
+                          <div className="btn" onClick={() => sortAccessByType()}>
                             <span>Type</span>
                           </div>
                         </div>
@@ -125,10 +170,12 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className="list">
-                <ul>
-                  {accessData &&
-                    accessData.access.map((accessItem) => (
+              {accessData.access.length === 0 ? (
+                <p>Carregando...</p>
+              ) : (
+                <div className="list">
+                  <ul>
+                    {filteredAccess.map((accessItem) => (
                       <li
                         key={accessItem.id}
                         className="col-12 d-flex flex-justify-between width-full py-4 border-bottom color-border-muted public source"
@@ -170,8 +217,9 @@ const Home = () => {
                         </div>
                       </li>
                     ))}
-                </ul>
-              </div>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
