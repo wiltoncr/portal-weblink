@@ -93,6 +93,19 @@ const Home = () => {
     );
   });
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        console.log(`Texto '${text}' copiado para o clipboard.`);
+        // Aqui você pode adicionar um feedback visual se desejar
+      })
+      .catch((error) => {
+        console.error('Erro ao copiar para o clipboard:', error);
+        // Tratar o erro conforme necessário
+      });
+  };
+
   return (
     <>
       <Header />
@@ -202,6 +215,7 @@ const Home = () => {
                           <button
                             type="submit"
                             className="js-toggler-target rounded-left-2 btn-sm btn BtnGroup-item"
+                            onClick={() => copyToClipboard(accessItem.access)}
                           >
                             <svg
                               height="16"
