@@ -1,10 +1,55 @@
 import './Home.css';
 
+import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import Header from '../../Components/Header';
+import accesService from '../../services/access';
 
 const Home = () => {
+  const [accessData, setAccessData] = useState<AccessData | null>(null);
+  interface AccessData {
+    access: AccessItem[];
+  }
+
+  interface AccessItem {
+    id: number;
+    type: number;
+    server: boolean;
+    access: string;
+    desc: string;
+    client: ClientInfo;
+  }
+
+  interface ClientInfo {
+    id: number;
+    name: string;
+    cnpj: string;
+    email: string;
+  }
+  useEffect(() => {
+    const fetchAccessData = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+        const { token } = user;
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+
+        const response: AccessData | null = await accesService.getAllAccess(token);
+
+        if (response) {
+          setAccessData(response);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+        // Trate o erro conforme necessário (ex.: redirecionar para página de login)
+      }
+    };
+
+    fetchAccessData();
+  }, []);
+
   return (
     <>
       <Header />
@@ -82,44 +127,49 @@ const Home = () => {
               </div>
               <div className="list">
                 <ul>
-                  <li className="col-12 d-flex flex-justify-between width-full py-4 border-bottom color-border-muted public source">
-                    <div className="col-10 col-lg-9 d-inline-block">
-                      <div className="d-inline-block mb-1">
-                        <h3 className="wb-break-all">
-                          <a href="#">control-help-desk</a>
-                        </h3>
-                      </div>
-                      <div>
-                        <p className="col-9 d-inline-block color-fg-muted mb-2 pr-4">
-                          Este projeto simples tem como objetivo controlar acessos remotos dos
-                          clientes
-                        </p>
-                      </div>
-                      <div className="f6 color-fg-muted mt-2">
-                        <span className="ml-0 mr-3">
-                          <span>JavaScript</span>
-                        </span>
-                        Updated
-                      </div>
-                    </div>
-                    <div className="col-2 d-flex flex-column flex-justify-around flex-items-end ml-3">
-                      <button
-                        type="submit"
-                        className="js-toggler-target rounded-left-2 btn-sm btn BtnGroup-item"
+                  {accessData &&
+                    accessData.access.map((accessItem) => (
+                      <li
+                        key={accessItem.id}
+                        className="col-12 d-flex flex-justify-between width-full py-4 border-bottom color-border-muted public source"
                       >
-                        <svg
-                          height="16"
-                          viewBox="0 0 16 16"
-                          version="1.1"
-                          width="16"
-                          className="octicon octicon-star d-inline-block mr-2"
-                        >
-                          <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"></path>
-                        </svg>
-                        <span className="d-inline">Copy</span>
-                      </button>
-                    </div>
-                  </li>
+                        <div className="col-10 col-lg-9 d-inline-block">
+                          <div className="d-inline-block mb-1">
+                            <h3 className="wb-break-all">
+                              <a href={'/access/' + accessItem.id}>{accessItem.access}</a>
+                            </h3>
+                          </div>
+                          <div>
+                            <p className="col-9 d-inline-block color-fg-muted mb-2 pr-4">
+                              Cliente: {accessItem.client.name} - {accessItem.desc}
+                            </p>
+                          </div>
+                          <div className="f6 color-fg-muted mt-2">
+                            <span className="ml-0 mr-3">
+                              <span>{accessItem.type == 1 ? 'Anydesk' : 'Outros'}</span>
+                            </span>
+                            {accessItem.server ? 'Servidor' : 'Auxilar'}
+                          </div>
+                        </div>
+                        <div className="col-2 d-flex flex-column flex-justify-around flex-items-end ml-3">
+                          <button
+                            type="submit"
+                            className="js-toggler-target rounded-left-2 btn-sm btn BtnGroup-item"
+                          >
+                            <svg
+                              height="16"
+                              viewBox="0 0 16 16"
+                              version="1.1"
+                              width="16"
+                              className="octicon octicon-star d-inline-block mr-2"
+                            >
+                              <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694Z"></path>
+                            </svg>
+                            <span className="d-inline">Copy</span>
+                          </button>
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </div>
