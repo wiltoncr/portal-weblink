@@ -1,6 +1,7 @@
 import './Home.css';
 
 import { SetStateAction, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import Header from '../../Components/Header';
@@ -196,7 +197,7 @@ const Home = () => {
                         <div className="col-10 col-lg-9 d-inline-block">
                           <div className="d-inline-block mb-1">
                             <h3 className="wb-break-all">
-                              <a href={'/access/' + accessItem.id}>{accessItem.access}</a>
+                              <Link to={`/access/${accessItem.id}`}>{accessItem.access}</Link>
                             </h3>
                           </div>
                           <div>
