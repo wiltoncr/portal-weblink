@@ -4,20 +4,11 @@ import axios from 'axios';
 // Definindo a base do URL para os endpoints
 const apiUrl = import.meta.env.VITE_API_BACKENDAPP;
 
-interface AccessData {
-  access: AccessItem[];
+interface ClientData {
+  clients: ClientItem[];
 }
 
-interface AccessItem {
-  id: number;
-  type: number;
-  server: boolean;
-  access: string;
-  desc: string;
-  client: ClientInfo;
-}
-
-interface ClientInfo {
+interface ClientItem {
   id: number;
   name: string;
   cnpj: string;
@@ -25,11 +16,11 @@ interface ClientInfo {
 }
 
 // Definindo o objeto do serviço
-const accesService = {
-  async getByIdAccess(id: string, token: string): Promise<AccessData> {
+const clientService = {
+  async getByIdClient(id: string, token: string): Promise<ClientData | null> {
     try {
-      const endpoint = `${apiUrl}/access/${id}`;
-      const response = await axios.get<AccessData>(endpoint, {
+      const endpoint = `${apiUrl}/client/${id}`;
+      const response = await axios.get<ClientData>(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -37,15 +28,15 @@ const accesService = {
 
       return response.data;
     } catch (error) {
-      console.error('Erro ao buscar informações de acessos:', error);
-      return { access: [{ id: '0' }] }; // Retorna null em caso de erro
+      console.error('Erro ao buscar informações de cliente:', error);
+      return null; // Retorna null em caso de erro
     }
   },
   // Função para buscar informações do usuário
-  async getAllAccess(token: string): Promise<AccessData | null> {
+  async getAllClient(token: string): Promise<ClientData | null> {
     try {
-      const endpoint = `${apiUrl}/access`;
-      const response = await axios.get<AccessData>(endpoint, {
+      const endpoint = `${apiUrl}/client`;
+      const response = await axios.get<ClientData>(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -59,20 +50,20 @@ const accesService = {
   },
 
   // Função para salvar os dados do usuário no localStorage
-  setUserData(userData: AccessData | null) {
-    if (!userData) {
+  setClientData(ClientData: ClientData | null) {
+    if (!ClientData) {
       throw new Error('Token inválido');
     }
-    const parsedData = JSON.stringify(userData);
-    localStorage.setItem('userData', parsedData);
+    const parsedData = JSON.stringify(ClientData);
+    localStorage.setItem('clientData', parsedData);
   },
 
   // Função para recuperar os dados do usuário do localStorage
-  getUserDataFromLocalStorage(): AccessData | null {
-    const data = localStorage.getItem('userData');
+  getClientDataFromLocalStorage(): ClientData | null {
+    const data = localStorage.getItem('clientData');
     if (!data) return null;
     try {
-      const parsedData: AccessData = JSON.parse(data);
+      const parsedData: ClientData = JSON.parse(data);
       return parsedData;
     } catch (error) {
       console.log(error);
@@ -81,4 +72,4 @@ const accesService = {
   },
 };
 
-export default accesService;
+export default clientService;

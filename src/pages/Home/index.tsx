@@ -11,6 +11,12 @@ const Home = () => {
   const [accessData, setAccessData] = useState<AccessData>({ access: [] });
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [accessTypeOptions, setAccessTypeOptions] = useState([
+    { value: 1, label: 'Anydesk' },
+    { value: 2, label: 'Teamviewer' },
+    { value: 3, label: 'Outros' },
+  ]);
   interface AccessData {
     access: AccessItem[];
   }
@@ -207,7 +213,11 @@ const Home = () => {
                           </div>
                           <div className="f6 color-fg-muted mt-2">
                             <span className="ml-0 mr-3">
-                              <span>{accessItem.type == 1 ? 'Anydesk' : 'Outros'}</span>
+                              {accessTypeOptions.map((type) => {
+                                if (type.value == accessItem.type) {
+                                  return <span>{type.label}</span>;
+                                }
+                              })}
                             </span>
                             {accessItem.server ? 'Servidor' : 'Auxilar'}
                           </div>
