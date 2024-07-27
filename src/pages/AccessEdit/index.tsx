@@ -54,19 +54,79 @@ const AccessEdit = () => {
 
   const [clientsData, setClientsData] = useState<ClientData>({ clients: [] });
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = event.target;
-    console.log(name, value, type, checked);
+  const handleInputAccess = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
 
-    setAccessData((prevState) => ({
-      ...prevState,
-      access: [
-        {
-          ...prevState.access[0],
-          [name]: type === 'checkbox' ? checked : value,
-        },
-      ],
-    }));
+    setAccessData((prevState) => {
+      return {
+        ...prevState,
+        access: [{ ...prevState.access[0], access: value }],
+      };
+    });
+  };
+
+  const handleInputDesc = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+
+    setAccessData((prevState) => {
+      return {
+        ...prevState,
+        access: [{ ...prevState.access[0], desc: value }],
+      };
+    });
+  };
+
+  const handleInputType = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+
+    setAccessData((prevState) => {
+      return {
+        ...prevState,
+        access: [{ ...prevState.access[0], type: Number(value) }],
+      };
+    });
+  };
+
+  const handleInputClient = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+
+    setAccessData((prevState) => {
+      return {
+        ...prevState,
+        access: [
+          { ...prevState.access[0], client: { ...prevState.access[0].client, id: Number(value) } },
+        ],
+      };
+    });
+  };
+
+  const handleInputServer = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { value } = event.target;
+
+    setAccessData((prevState) => {
+      return {
+        ...prevState,
+        access: [{ ...prevState.access[0], server: Boolean(value) }],
+      };
+    });
+
+    console.log(accessData);
+  };
+
+  const handleSaveAccess = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+      const { token } = user;
+      if (!token) {
+        throw new Error('Token não encontrado');
+      }
+      const response: AccessData | null = await accesService.putAccess(accessData, token);
+      if (response) {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar informações do usuário:', error);
+    }
   };
 
   const navigate = useNavigate();
@@ -131,7 +191,7 @@ const AccessEdit = () => {
                         name="access"
                         placeholder="Digite o acesso do cliente"
                         value={accessData.access[0].access}
-                        onChange={handleInputChange}
+                        onChange={handleInputAccess}
                       />
                     </div>
                     <div className="form-group my-3">
@@ -145,7 +205,7 @@ const AccessEdit = () => {
                         name="desc"
                         placeholder="Digite o acesso do cliente"
                         value={accessData.access[0].desc}
-                        onChange={handleInputChange}
+                        onChange={handleInputDesc}
                       />
                     </div>
                     <div className="form-group my-3">
@@ -156,7 +216,7 @@ const AccessEdit = () => {
                         className="form-control input-contrast width-full"
                         name="type"
                         value={accessData.access[0].type}
-                        onChange={handleInputChange}
+                        onChange={handleInputType}
                       >
                         <option value="">Selecione o tipo</option>
                         {accessTypeOptions.map((option) => (
@@ -174,7 +234,7 @@ const AccessEdit = () => {
                         className="form-control input-contrast width-full"
                         name="client"
                         value={accessData.access[0].client.id}
-                        onChange={handleInputChange}
+                        onChange={handleInputClient}
                       >
                         <option value="">Selecione o Cliente</option>
                         {clientsData.clients.map((client) => (
@@ -189,10 +249,10 @@ const AccessEdit = () => {
                         <input
                           className="mr-2"
                           type="checkbox"
-                          value={accessData.access[0].server ? 1 : 0}
+                          checked={accessData.access[0].server ? true : false}
                           id="server"
                           name="server"
-                          onChange={handleInputChange}
+                          onChange={handleInputServer}
                         />
                         <label htmlFor="server">Servidor</label>
                       </div>
@@ -201,7 +261,10 @@ const AccessEdit = () => {
                 </div>
                 <div className="Box-footer">
                   <div className="form-actions">
-                    <button className="d-md-none btn btn-primary d-flex flex-items-center flex-justify-center width-full mb-4">
+                    <button
+                      className="d-md-none btn btn-primary d-flex flex-items-center flex-justify-center width-full mb-4"
+                      onClick={handleSaveAccess}
+                    >
                       <svg
                         aria-hidden="true"
                         height="16"
