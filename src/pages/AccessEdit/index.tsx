@@ -100,17 +100,15 @@ const AccessEdit = () => {
     });
   };
 
-  const handleInputServer = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { value } = event.target;
+  const handleInputServer = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = event.target;
 
     setAccessData((prevState) => {
       return {
         ...prevState,
-        access: [{ ...prevState.access[0], server: Boolean(value) }],
+        access: [{ ...prevState.access[0], server: Boolean(checked) }],
       };
     });
-
-    console.log(accessData);
   };
 
   const handleSaveAccess = async () => {
@@ -249,7 +247,7 @@ const AccessEdit = () => {
                         <input
                           className="mr-2"
                           type="checkbox"
-                          checked={accessData.access[0].server ? true : false}
+                          checked={accessData.access[0].server}
                           id="server"
                           name="server"
                           onChange={handleInputServer}
@@ -310,7 +308,10 @@ const AccessEdit = () => {
                         </Link>
                       </div>
                       <div className="d-none d-md-flex flex-md-items-center flex-md-justify-end">
-                        <button className="text-center btn btn-primary ml-2">
+                        <button
+                          className="text-center btn btn-primary ml-2"
+                          onClick={handleSaveAccess}
+                        >
                           <svg
                             aria-hidden="true"
                             height="16"
