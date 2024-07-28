@@ -26,6 +26,21 @@ interface ClientInfo {
 
 // Definindo o objeto do serviço
 const accesService = {
+  async delAccess(id: number, token: string): Promise<AccessData> {
+    try {
+      const endpoint = `${apiUrl}/access/${id}`;
+
+      const response = await axios.delete<AccessData>(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar informações de acessos:', error);
+      return { access: [{ id: '0' }] }; // Retorna null em caso de erro
+    }
+  },
   async postAccess(accessdata: AccessData, token: string): Promise<AccessData> {
     try {
       const endpoint = `${apiUrl}/access/`;
