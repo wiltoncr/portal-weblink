@@ -26,6 +26,28 @@ interface ClientInfo {
 
 // Definindo o objeto do serviço
 const accesService = {
+  async postAccess(accessdata: AccessData, token: string): Promise<AccessData> {
+    try {
+      const endpoint = `${apiUrl}/access/`;
+      const { type, server, access, desc } = accessdata.access[0];
+      const idClient = accessdata.access[0].client.id;
+
+      const response = await axios.post<AccessData>(
+        endpoint,
+        { type, server, access, desc, idClient },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar informações de acessos:', error);
+      return { access: [{ id: '0' }] }; // Retorna null em caso de erro
+    }
+  },
+
   async putAccess(accessdata: AccessData, token: string): Promise<AccessData> {
     try {
       const endpoint = `${apiUrl}/access/`;

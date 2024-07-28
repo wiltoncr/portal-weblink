@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { useAuth } from './contexts/AuthContext';
+import AccessAdd from './pages/AccessAdd';
 import AccessEdit from './pages/AccessEdit';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -20,6 +21,10 @@ export default function AppRoutes() {
         <Route
           path="/access/:id"
           element={isAuthenticated ? <AccessEdit /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/access/add"
+          element={isAuthenticated ? <AccessAdd /> : <Navigate to="/login" />}
         />
       </Routes>
     </BrowserRouter>
