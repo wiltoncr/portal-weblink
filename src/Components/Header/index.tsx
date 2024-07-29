@@ -1,6 +1,7 @@
 import './Header.css';
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import userService from '../../services/userData';
 
@@ -106,10 +107,7 @@ const Header = () => {
                   <nav className="ActionList">
                     <ul className="ActionListWrap">
                       <li className="ActionListItem">
-                        <a
-                          href="/dashboard"
-                          className="ActionListContent ActionListContent--visual16"
-                        >
+                        <Link to="/" className="ActionListContent ActionListContent--visual16">
                           <span className="ActionListItem-visual ActionListItem-visual--leading">
                             <svg
                               aria-hidden="true"
@@ -124,11 +122,11 @@ const Header = () => {
                           </span>
 
                           <span className="ActionListItem-label">Home</span>
-                        </a>
+                        </Link>
                       </li>
                       <li className="ActionListItem">
-                        <a
-                          href="https://github.com/codespaces"
+                        <Link
+                          to="/client"
                           className="ActionListContent ActionListContent--visual16"
                         >
                           <span className="ActionListItem-visual ActionListItem-visual--leading">
@@ -144,8 +142,8 @@ const Header = () => {
                             </svg>
                           </span>
 
-                          <span className="ActionListItem-label">Codespaces</span>
-                        </a>
+                          <span className="ActionListItem-label">Clientes</span>
+                        </Link>
                       </li>
                       <li className="ActionListItem">
                         <a
@@ -164,7 +162,7 @@ const Header = () => {
                             </svg>
                           </span>
 
-                          <span className="ActionListItem-label">Explore</span>
+                          <span className="ActionListItem-label">Empresas</span>
                         </a>
                       </li>
                     </ul>

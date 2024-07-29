@@ -1,35 +1,11 @@
-import './AccessAdd.css';
-
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import Header from '../../Components/Header';
-import accesService from '../../services/access';
 import clientService from '../../services/client';
 
-const AccessAdd = () => {
-  interface AccessData {
-    access: AccessItem[];
-  }
-
-  interface AccessItem {
-    id: number;
-    type: number;
-    server: boolean;
-    access: string;
-    desc: string;
-    client: ClientInfo;
-  }
-
-  interface ClientInfo {
-    id: number;
-    name: string;
-    cnpj: string;
-    email: string;
-  }
-
+const ClientAdd = () => {
   interface ClientData {
     clients: ClientItem[];
   }
@@ -41,124 +17,58 @@ const AccessAdd = () => {
     email: string;
   }
 
-  const accessTypeOptions = [
-    { value: 1, label: 'Anydesk' },
-    { value: 2, label: 'Teamviewer' },
-    { value: 3, label: 'Outros' },
-  ];
-
-  const [accessData, setAccessData] = useState<AccessData>({
-    access: [
-      {
-        id: 0,
-        desc: '',
-        access: '',
-        type: 0,
-        server: false,
-        client: { id: 0, cnpj: '', email: '', name: '' },
-      },
-    ],
+  const [clientsData, setClientsData] = useState<ClientData>({
+    clients: [{ id: 0, name: '', cnpj: '', email: '' }],
   });
 
-  const [clientsData, setClientsData] = useState<ClientData>({ clients: [] });
-
-  const handleInputAccess = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputName = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = event.target;
 
-    setAccessData((prevState) => {
+    setClientsData((prevState) => {
       return {
         ...prevState,
-        access: [{ ...prevState.access[0], access: value }],
+        clients: [{ ...prevState.clients[0], name: value }],
       };
     });
   };
 
-  const handleInputDesc = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputCnpj = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = event.target;
 
-    setAccessData((prevState) => {
+    setClientsData((prevState) => {
       return {
         ...prevState,
-        access: [{ ...prevState.access[0], desc: value }],
+        clients: [{ ...prevState.clients[0], cnpj: value }],
       };
     });
   };
 
-  const handleInputType = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputEmail = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = event.target;
 
-    setAccessData((prevState) => {
+    setClientsData((prevState) => {
       return {
         ...prevState,
-        access: [{ ...prevState.access[0], type: Number(value) }],
+        clients: [{ ...prevState.clients[0], email: value }],
       };
     });
   };
 
-  const handleInputClient = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { value } = event.target;
-
-    setAccessData((prevState) => {
-      return {
-        ...prevState,
-        access: [
-          { ...prevState.access[0], client: { ...prevState.access[0].client, id: Number(value) } },
-        ],
-      };
-    });
-  };
-
-  const handleInputServer = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { checked } = event.target;
-
-    setAccessData((prevState) => {
-      return {
-        ...prevState,
-        access: [{ ...prevState.access[0], server: Boolean(checked) }],
-      };
-    });
-  };
-
-  const handleSaveAccess = async () => {
+  const handleSaveClient = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user') ?? '{}');
       const { token } = user;
       if (!token) {
         throw new Error('Token não encontrado');
       }
-      await accesService.postAccess(accessData, token);
-      navigate(-1);
+      const response: ClientData | null = await clientService.postAccess(clientsData, token);
+      if (response) {
+        console.log(response);
+      }
     } catch (error) {
-      console.error('Erro ao buscar informações do usuário:', error);
+      console.error('Erro ao buscar informações do cliente:', error);
     }
   };
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchAccessDataById = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem('user') ?? '{}');
-        const { token } = user;
-        if (!token) {
-          throw new Error('Token não encontrado');
-        }
-
-        const clientsResponse: ClientData | null = await clientService.getAllClient(token);
-
-        if (clientsResponse) {
-          setClientsData(clientsResponse);
-        } else {
-          navigate(-1);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar informações do usuário:', error);
-        // Trate o erro conforme necessário (por exemplo, redirecionar para a página de login)
-      }
-    };
-
-    fetchAccessDataById();
-  }, [navigate]);
 
   return (
     <>
@@ -169,86 +79,51 @@ const AccessAdd = () => {
           <div className="Box d-flex flex-column Box-overlay--wide">
             <div className="width-full">
               <div className="Box-header">
-                <h1 className="Box-title">Incluindo Acesso</h1>
+                <h1 className="Box-title">Incluindo Cliente</h1>
               </div>
               <div className="Box-body">
                 <form>
                   <div className="form-group mt-0 mb-3 ">
                     <div className="mb-2">
-                      <label htmlFor="access">Acesso</label>
+                      <label htmlFor="name">Nome</label>
                     </div>
                     <input
                       type="text"
-                      id="access"
+                      id="name"
                       className="form-control input-contrast width-full js-length-limited-input"
-                      name="access"
-                      placeholder="Digite o acesso do cliente"
-                      value={accessData.access[0].access ?? ''}
-                      onChange={handleInputAccess}
+                      name="name"
+                      placeholder="Digite o nome do cliente"
+                      value={clientsData.clients[0].name}
+                      onChange={handleInputName}
                     />
                   </div>
                   <div className="form-group my-3">
                     <div className="mb-2">
-                      <label htmlFor="desc">Descrição</label>
+                      <label htmlFor="cnpj">Cnpj</label>
                     </div>
                     <input
                       type="text"
-                      id="desc"
+                      id="cnpj"
                       className="form-control input-contrast width-full"
-                      name="desc"
-                      placeholder="Digite o acesso do cliente"
-                      value={accessData.access[0].desc}
-                      onChange={handleInputDesc}
+                      name="cnpj"
+                      placeholder="Digite o cnpj do cliente"
+                      value={clientsData.clients[0].cnpj}
+                      onChange={handleInputCnpj}
                     />
                   </div>
                   <div className="form-group my-3">
                     <div className="mb-2">
-                      <label htmlFor="type">Tipo</label>
+                      <label htmlFor="email">Email</label>
                     </div>
-                    <select
+                    <input
+                      type="email"
+                      id="email"
                       className="form-control input-contrast width-full"
-                      name="type"
-                      value={accessData.access[0].type}
-                      onChange={handleInputType}
-                    >
-                      <option value="">Selecione o tipo</option>
-                      {accessTypeOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group my-3">
-                    <div className="mb-2">
-                      <label htmlFor="client">Cliente</label>
-                    </div>
-                    <select
-                      className="form-control input-contrast width-full"
-                      name="client"
-                      value={accessData.access[0].client.id}
-                      onChange={handleInputClient}
-                    >
-                      <option value="">Selecione o Cliente</option>
-                      {clientsData.clients.map((client) => (
-                        <option key={client.id} value={client.id}>
-                          {client.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="form-group my-3">
-                    <div className="mb-2">
-                      <input
-                        className="mr-2"
-                        type="checkbox"
-                        checked={accessData.access[0].server}
-                        id="server"
-                        name="server"
-                        onChange={handleInputServer}
-                      />
-                      <label htmlFor="server">Servidor</label>
-                    </div>
+                      name="email"
+                      placeholder="Digite o Email do cliente"
+                      value={clientsData.clients[0].email}
+                      onChange={handleInputEmail}
+                    />
                   </div>
                 </form>
               </div>
@@ -256,7 +131,7 @@ const AccessAdd = () => {
                 <div className="form-actions">
                   <button
                     className="d-md-none btn btn-primary d-flex flex-items-center flex-justify-center width-full mb-4"
-                    onClick={handleSaveAccess}
+                    onClick={handleSaveClient}
                   >
                     <svg
                       aria-hidden="true"
@@ -272,7 +147,7 @@ const AccessAdd = () => {
                   </button>
                   <Link
                     className="d-md-none btn d-flex flex-items-center flex-justify-center width-full mb-4"
-                    to={'/'}
+                    to={'/client'}
                   >
                     <svg
                       aria-hidden="true"
@@ -288,7 +163,7 @@ const AccessAdd = () => {
                   </Link>
                   <div className="d-flex flex-items-start">
                     <div className="d-none d-md-flex flex-md-items-center flex-md-justify-end">
-                      <Link className="text-center btn ml-2" to={'/'}>
+                      <Link className="text-center btn ml-2" to={'/client'}>
                         <svg
                           aria-hidden="true"
                           height="16"
@@ -305,7 +180,7 @@ const AccessAdd = () => {
                     <div className="d-none d-md-flex flex-md-items-center flex-md-justify-end">
                       <button
                         className="text-center btn btn-primary ml-2"
-                        onClick={handleSaveAccess}
+                        onClick={handleSaveClient}
                       >
                         <svg
                           aria-hidden="true"
@@ -332,4 +207,4 @@ const AccessAdd = () => {
   );
 };
 
-export default AccessAdd;
+export default ClientAdd;

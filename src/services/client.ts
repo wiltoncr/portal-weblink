@@ -17,6 +17,61 @@ interface ClientItem {
 
 // Definindo o objeto do serviço
 const clientService = {
+  async postAccess(clientdata: ClientData, token: string): Promise<ClientData> {
+    try {
+      const endpoint = `${apiUrl}/client/`;
+      const { name, cnpj, email } = clientdata.clients[0];
+
+      const response = await axios.post<ClientData>(
+        endpoint,
+        { name, cnpj, email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar informações de acessos:', error);
+      return { clients: [] }; // Retorna null em caso de erro
+    }
+  },
+  async delAccess(id: number, token: string): Promise<ClientData> {
+    try {
+      const endpoint = `${apiUrl}/client/${id}`;
+
+      const response = await axios.delete<ClientData>(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar informações de acessos:', error);
+      return { clients: [] };
+    }
+  },
+  async putClient(clientdata: ClientData, token: string): Promise<ClientData> {
+    try {
+      const endpoint = `${apiUrl}/client/`;
+      const { id, name, cnpj, email } = clientdata.clients[0];
+
+      const response = await axios.put<ClientData>(
+        endpoint,
+        { id, name, cnpj, email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar informações de clientes:', error);
+      return { clients: [] };
+    }
+  },
   async getByIdClient(id: string, token: string): Promise<ClientData | null> {
     try {
       const endpoint = `${apiUrl}/client/${id}`;
