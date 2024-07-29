@@ -53,7 +53,7 @@ const companyService = {
   },
   async putCompany(companydata: CompanyData, token: string): Promise<CompanyData> {
     try {
-      const endpoint = `${apiUrl}/client/`;
+      const endpoint = `${apiUrl}/company/`;
       const { id, name, cnpj, email } = companydata.companys[0];
 
       const response = await axios.put<CompanyData>(

@@ -10,6 +10,7 @@ import Company from './pages/Company';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CompanyEdit from './pages/CompanyEdit';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -40,6 +41,10 @@ export default function AppRoutes() {
           element={isAuthenticated ? <ClientEdit /> : <Navigate to="/login" />}
         />
         <Route path="/company" element={isAuthenticated ? <Company /> : <Navigate to="/login" />} />
+        <Route
+          path="/company/:id"
+          element={isAuthenticated ? <CompanyEdit /> : <Navigate to="/login" />}
+        />
       </Routes>
     </BrowserRouter>
   );
