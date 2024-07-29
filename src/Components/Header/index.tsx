@@ -146,8 +146,8 @@ const Header = () => {
                         </Link>
                       </li>
                       <li className="ActionListItem">
-                        <a
-                          href="/explore"
+                        <Link
+                          to="/company"
                           className="ActionListContent ActionListContent--visual16"
                         >
                           <span className="ActionListItem-visual ActionListItem-visual--leading">
@@ -163,7 +163,7 @@ const Header = () => {
                           </span>
 
                           <span className="ActionListItem-label">Empresas</span>
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </nav>

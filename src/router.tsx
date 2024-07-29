@@ -6,6 +6,7 @@ import AccessEdit from './pages/AccessEdit';
 import Client from './pages/Client';
 import ClientAdd from './pages/ClientAdd';
 import ClientEdit from './pages/ClientEdit';
+import Company from './pages/Company';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -38,6 +39,7 @@ export default function AppRoutes() {
           path="/client/:id"
           element={isAuthenticated ? <ClientEdit /> : <Navigate to="/login" />}
         />
+        <Route path="/company" element={isAuthenticated ? <Company /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
