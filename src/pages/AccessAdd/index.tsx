@@ -1,6 +1,6 @@
 import './AccessAdd.css';
 
-import { useEffect, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import Header from '../../Components/Header';
 import accesService from '../../services/access';
 import clientService from '../../services/client';
+import companyService from '../../services/company';
 
 const AccessAdd = () => {
   interface AccessData {
@@ -41,6 +42,17 @@ const AccessAdd = () => {
     email: string;
   }
 
+  interface CompanyData {
+    companys: CompanyInfo[];
+  }
+
+  interface CompanyInfo {
+    id: number;
+    name: string;
+    cnpj: string;
+    email: string;
+  }
+
   const accessTypeOptions = [
     { value: 1, label: 'Anydesk' },
     { value: 2, label: 'Teamviewer' },
@@ -61,6 +73,14 @@ const AccessAdd = () => {
   });
 
   const [clientsData, setClientsData] = useState<ClientData>({ clients: [] });
+
+  const [companysData, setCompanysData] = useState<CompanyData>({ companys: [] });
+
+  const [companyInput, setCompanyInput] = useState('');
+
+  const [companySelected, setCompanySelected] = useState(0);
+
+  const [dropdownCompany, setDropdownCompany] = useState(false);
 
   const handleInputAccess = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = event.target;
@@ -108,6 +128,29 @@ const AccessAdd = () => {
     });
   };
 
+  const handleInputCompany = (companyId: string | number) => {
+    const findCompany = companysData.companys.find((company) => company.id === companyId)?.name;
+    if (findCompany) {
+      setCompanyInput(findCompany);
+      setCompanySelected(Number(companyId));
+      setDropdownCompany(!dropdownCompany);
+    }
+  };
+
+  const handleSearchChangeCompany = (event: { target: { value: SetStateAction<string> } }) => {
+    setCompanyInput(event.target.value);
+    setDropdownCompany(!dropdownCompany);
+  };
+
+  const filteredCompany = companysData.companys.filter((item) => {
+    const companyName = item.name.toLowerCase();
+    const searchTermLower = companyInput.toLowerCase();
+
+    // Verifica se algum dos campos contém o termo de pesquisa
+
+    return companyName.includes(searchTermLower);
+  });
+
   const handleInputServer = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = event.target;
 
@@ -148,6 +191,13 @@ const AccessAdd = () => {
 
         if (clientsResponse) {
           setClientsData(clientsResponse);
+        } else {
+          navigate(-1);
+        }
+
+        const companysResponse: CompanyData = await companyService.getAllCompany(token);
+        if (companysResponse.companys.length > 0) {
+          setCompanysData(companysResponse);
         } else {
           navigate(-1);
         }
@@ -196,7 +246,7 @@ const AccessAdd = () => {
                       id="desc"
                       className="form-control input-contrast width-full"
                       name="desc"
-                      placeholder="Digite o acesso do cliente"
+                      placeholder="Digite a descrição do cliente"
                       value={accessData.access[0].desc}
                       onChange={handleInputDesc}
                     />
@@ -218,6 +268,37 @@ const AccessAdd = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div className="form-group my-3 dropdown-container">
+                    <div className="mb-2">
+                      <label htmlFor="company">Empresa</label>
+                    </div>
+                    <input
+                      type="text"
+                      id="company"
+                      className="form-control input-contrast width-full"
+                      name="company"
+                      placeholder="Selecione a empresa"
+                      value={companyInput}
+                      onChange={handleSearchChangeCompany}
+                    />
+                    <div
+                      className={`dropdown form-control input-contrast ${!dropdownCompany ? 'd-none' : ''}`}
+                    >
+                      <ul>
+                        {companysData.companys.length === 0 ? (
+                          <li>Não há empresas</li>
+                        ) : (
+                          <>
+                            {filteredCompany.map((company) => (
+                              <li onClick={() => handleInputCompany(company.id)} value={company.id}>
+                                {company.name}
+                              </li>
+                            ))}
+                          </>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                   <div className="form-group my-3">
                     <div className="mb-2">

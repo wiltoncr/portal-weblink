@@ -96,3 +96,33 @@ label {
 .mr-2 {
     margin-right: 0.5rem !important;
 }
+
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown {
+    position: absolute;
+    width: 100% !important;
+    padding: 0 !important;
+    border-color: #316dca !important;
+    box-shadow: inset 0 0 0 1px #316dca !important;
+}
+
+
+.dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown li {
+    padding: 2px;
+    cursor: pointer;
+    padding-left: 12px;
+}
+
+.dropdown li:hover {
+    background-color: #1a66db;
+    color: white;
+}
