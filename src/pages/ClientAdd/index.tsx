@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import Header from '../../Components/Header';
 import clientService from '../../services/client';
+import companyService from '../../services/company';
 
 const ClientAdd = () => {
   interface ClientData {
@@ -15,11 +17,38 @@ const ClientAdd = () => {
     name: string;
     cnpj: string;
     email: string;
+    company: CompanyInfo;
+  }
+  interface CompanyData {
+    companys: CompanyInfo[];
+  }
+
+  interface CompanyInfo {
+    id: number;
+    name: string;
+    cnpj: string;
+    email: string;
   }
 
   const [clientsData, setClientsData] = useState<ClientData>({
-    clients: [{ id: 0, name: '', cnpj: '', email: '' }],
+    clients: [
+      {
+        id: 0,
+        name: '',
+        cnpj: '',
+        email: '',
+        company: { id: 0, name: '', cnpj: '', email: '' },
+      },
+    ],
   });
+
+  const [companysData, setCompanysData] = useState<CompanyData>({ companys: [] });
+
+  const [companyInput, setCompanyInput] = useState('');
+
+  const [companySelected, setCompanySelected] = useState(0);
+
+  const [dropdownCompany, setDropdownCompany] = useState(false);
 
   const handleInputName = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { value } = event.target;
@@ -54,6 +83,42 @@ const ClientAdd = () => {
     });
   };
 
+  const handleInputCompany = (companyId: string | number) => {
+    const findCompany = companysData.companys.find((company) => company.id === companyId);
+    if (findCompany) {
+      setCompanyInput(findCompany.name);
+      setCompanySelected(Number(companyId));
+
+      setClientsData((prevState) => {
+        return {
+          ...prevState,
+          clients: [
+            {
+              ...prevState.clients[0],
+              company: { ...findCompany },
+            },
+          ],
+        };
+      });
+
+      setDropdownCompany(!dropdownCompany);
+    }
+  };
+
+  const handleSearchChangeCompany = (event: { target: { value: SetStateAction<string> } }) => {
+    setCompanyInput(event.target.value);
+    setDropdownCompany(!dropdownCompany);
+  };
+
+  const filteredCompany = companysData.companys.filter((item) => {
+    const companyName = item.name.toLowerCase();
+    const searchTermLower = companyInput.toLowerCase();
+
+    // Verifica se algum dos campos contém o termo de pesquisa
+
+    return companyName.includes(searchTermLower);
+  });
+
   const handleSaveClient = async () => {
     try {
       const user = JSON.parse(localStorage.getItem('user') ?? '{}');
@@ -69,6 +134,32 @@ const ClientAdd = () => {
       console.error('Erro ao buscar informações do cliente:', error);
     }
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAccessDataById = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+        const { token } = user;
+        if (!token) {
+          throw new Error('Token não encontrado');
+        }
+
+        const companysResponse: CompanyData = await companyService.getAllCompany(token);
+        if (companysResponse.companys.length > 0) {
+          setCompanysData(companysResponse);
+        } else {
+          navigate(-1);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+        // Trate o erro conforme necessário (por exemplo, redirecionar para a página de login)
+      }
+    };
+
+    fetchAccessDataById();
+  }, [navigate]);
 
   return (
     <>
@@ -124,6 +215,37 @@ const ClientAdd = () => {
                       value={clientsData.clients[0].email}
                       onChange={handleInputEmail}
                     />
+                  </div>
+                  <div className="form-group my-3 dropdown-container">
+                    <div className="mb-2">
+                      <label htmlFor="company">Empresa</label>
+                    </div>
+                    <input
+                      type="text"
+                      id="company"
+                      className="form-control input-contrast width-full"
+                      name="company"
+                      placeholder="Selecione a empresa"
+                      value={companyInput}
+                      onChange={handleSearchChangeCompany}
+                    />
+                    <div
+                      className={`dropdown form-control input-contrast ${!dropdownCompany ? 'd-none' : ''}`}
+                    >
+                      <ul>
+                        {companysData.companys.length === 0 ? (
+                          <li>Não há empresas</li>
+                        ) : (
+                          <>
+                            {filteredCompany.map((company) => (
+                              <li onClick={() => handleInputCompany(company.id)} value={company.id}>
+                                {company.name}
+                              </li>
+                            ))}
+                          </>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 </form>
               </div>

@@ -13,6 +13,13 @@ interface ClientItem {
   name: string;
   cnpj: string;
   email: string;
+  company: CompanyInfo;
+}
+interface CompanyInfo {
+  id: number;
+  name: string;
+  cnpj: string;
+  email: string;
 }
 
 // Definindo o objeto do serviço
@@ -20,11 +27,11 @@ const clientService = {
   async postAccess(clientdata: ClientData, token: string): Promise<ClientData> {
     try {
       const endpoint = `${apiUrl}/client/`;
-      const { name, cnpj, email } = clientdata.clients[0];
+      const { name, cnpj, email, company } = clientdata.clients[0];
 
       const response = await axios.post<ClientData>(
         endpoint,
-        { name, cnpj, email },
+        { name, cnpj, email, companyId: company.id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
