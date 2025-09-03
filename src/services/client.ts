@@ -111,6 +111,26 @@ const clientService = {
     }
   },
 
+  async getClientsByCompany(token: string, companyId: number): Promise<ClientData | null> {
+    try {
+      const endpoint = `${apiUrl}/client/getByCompany`;
+      const response = await axios.post<ClientData>(
+        endpoint,
+        { companyId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao buscar clientes por empresa:', error);
+      return null;
+    }
+  },
+
   // Função para salvar os dados do usuário no localStorage
   setClientData(ClientData: ClientData | null) {
     if (!ClientData) {

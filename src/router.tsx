@@ -7,11 +7,11 @@ import Client from './pages/Client';
 import ClientAdd from './pages/ClientAdd';
 import ClientEdit from './pages/ClientEdit';
 import Company from './pages/Company';
+import CompanyAdd from './pages/CompanyAdd';
+import CompanyEdit from './pages/CompanyEdit';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import CompanyEdit from './pages/CompanyEdit';
-import CompanyAdd from './pages/CompanyAdd';
 
 export default function AppRoutes() {
   const { isAuthenticated } = useAuth();

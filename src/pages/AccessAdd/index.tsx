@@ -128,12 +128,27 @@ const AccessAdd = () => {
     });
   };
 
-  const handleInputCompany = (companyId: string | number) => {
+  const handleInputCompany = async (companyId: string | number) => {
     const findCompany = companysData.companys.find((company) => company.id === companyId)?.name;
     if (findCompany) {
       setCompanyInput(findCompany);
       setCompanySelected(Number(companyId));
       setDropdownCompany(!dropdownCompany);
+    }
+
+    const user = JSON.parse(localStorage.getItem('user') ?? '{}');
+    const { token } = user;
+    if (!token) {
+      throw new Error('Token não encontrado');
+    }
+
+    const clientsResponse: ClientData | null = await clientService.getClientsByCompany(
+      token,
+      Number(companyId),
+    );
+
+    if (clientsResponse) {
+      setClientsData(clientsResponse);
     }
   };
 
@@ -187,13 +202,13 @@ const AccessAdd = () => {
           throw new Error('Token não encontrado');
         }
 
-        const clientsResponse: ClientData | null = await clientService.getAllClient(token);
+        /*const clientsResponse: ClientData | null = await clientService.getAllClient(token);
 
         if (clientsResponse) {
           setClientsData(clientsResponse);
         } else {
           navigate(-1);
-        }
+        }*/
 
         const companysResponse: CompanyData = await companyService.getAllCompany(token);
         if (companysResponse.companys.length > 0) {
