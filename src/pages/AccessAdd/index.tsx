@@ -202,14 +202,6 @@ const AccessAdd = () => {
           throw new Error('Token não encontrado');
         }
 
-        /*const clientsResponse: ClientData | null = await clientService.getAllClient(token);
-
-        if (clientsResponse) {
-          setClientsData(clientsResponse);
-        } else {
-          navigate(-1);
-        }*/
-
         const companysResponse: CompanyData = await companyService.getAllCompany(token);
         if (companysResponse.companys.length > 0) {
           setCompanysData(companysResponse);
